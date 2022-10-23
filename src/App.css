@@ -10,11 +10,14 @@
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
   }
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #101012;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

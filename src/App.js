@@ -6,79 +6,17 @@ import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
 import { useEffect, useState } from "react";
 
 function App() {
+  // Initializing the client
   const thirdStorageClient = new ThirdStorage(
     //Replace the ThirdStorage Server URL
-    "http://localhost:3000/api/projects/mbtcvlutlw"
+    "http://localhost:3000/api/projects/ttmcivawyl"
   );
+
   const [data, setData] = useState("");
   const [file, setFile] = useState(null);
   const [key, setKey] = useState("");
 
-  const set = async (is_private = true) => {
-    console.log(
-      is_private
-        ? (await thirdStorageClient.signMessageForEncryption()) &&
-            (await thirdStorageClient.private.set(key, data))
-        : await thirdStorageClient.public.set(key, data)
-    );
-
-    // const message = `Stored encrypted data to thirdStorageClient in ${setDuration} ms \n ${JSON.stringify(
-    //   encryptedData
-    // )}`;
-    //
-    // alert(message);
-
-    alert("Stored!");
-
-    await retrieve(is_private);
-  };
-
-  async function retrieve(is_private = true) {
-    const res = is_private
-      ? await thirdStorageClient.private.get(key)
-      : await thirdStorageClient.public.get(key);
-    console.log(res);
-
-    let getMessage;
-
-    if (res.data) {
-      getMessage = `Retrieved data is \n ${JSON.stringify(res.data)}`;
-    } else {
-      getMessage = "Data not found";
-    }
-
-    alert(getMessage);
-  }
-
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [fetchedAddress, setFetchedAddress] = useState(false);
-
-  const {
-    connectAsync,
-    connectors,
-    isLoading,
-    pendingConnector,
-  } = useConnect();
-
-  const { address, isConnected } = useAccount();
-
-  const { signMessageAsync } = useSignMessage();
-  const { chain: activeChain } = useNetwork();
-
-  useEffect(() => {
-    (async () => {
-      if (!isLoading && isInitializing && !isConnected) {
-        setIsInitializing(false);
-      } else if (!isLoading && isConnected && isInitializing) {
-        let a = await thirdStorageClient.signedInWallet();
-
-        if (a) {
-          setFetchedAddress(a);
-        }
-      }
-    })();
-  }, []);
-
+  // Wallet authentication
   const signIn = async (a = null, chainId = null) => {
     try {
       let res = {};
@@ -106,15 +44,67 @@ function App() {
     }
   };
 
+  // Setting data
+  const set = async (is_private = true) => {
+    console.log(
+      is_private
+        ? (await thirdStorageClient.signMessageForEncryption()) &&
+            (await thirdStorageClient.private.set(key, data))
+        : await thirdStorageClient.public.set(key, data)
+    );
+    alert("Stored!");
+    await get(is_private);
+  };
+
+  // Getting data
+  async function get(is_private = true) {
+    const res = is_private
+      ? await thirdStorageClient.private.get(key)
+      : await thirdStorageClient.public.get(key);
+    console.log(res);
+
+    let getMessage;
+
+    if (res.data) {
+      getMessage = `Retrieved data is \n ${JSON.stringify(res.data)}`;
+    } else {
+      getMessage = "Data not found";
+    }
+
+    alert(getMessage);
+  }
+
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [fetchedAddress, setFetchedAddress] = useState(false);
+
+  const { connectAsync, connectors, isLoading, pendingConnector } =
+    useConnect();
+
+  const { address, isConnected } = useAccount();
+
+  const { signMessageAsync } = useSignMessage();
+  const { chain: activeChain } = useNetwork();
+
+  useEffect(() => {
+    (async () => {
+      if (!isLoading && isInitializing && !isConnected) {
+        setIsInitializing(false);
+      } else if (!isLoading && isConnected && isInitializing) {
+        let a = await thirdStorageClient.signedInWallet();
+
+        if (a) {
+          setFetchedAddress(a);
+        }
+      }
+    })();
+  }, []);
+
+  // Logging out
   const handleLogout = async () => {
     await thirdStorageClient.signOut();
     alert("Logged Out!");
     window.location.href = window.location.href;
   };
-
-  // if (isInitializing) {
-  //   return <div>"Waiting for wallet to get connected..." </div>;
-  // }
 
   return (
     <div className="App">
@@ -139,7 +129,7 @@ function App() {
           {fetchedAddress && (
             <div>
               <div className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title">
-                Logged in as {fetchedAddress}
+                Welcome, {fetchedAddress}
               </div>
               <br />
               <button onClick={handleLogout}>Logout</button>
@@ -162,10 +152,10 @@ function App() {
               <button onClick={() => set(true)}>
                 Click this button to store as private data
               </button>
-              <button onClick={() => retrieve(false)}>
+              <button onClick={() => get(false)}>
                 Click this button to retrieve data from public
               </button>
-              <button onClick={() => retrieve(true)}>
+              <button onClick={() => get(true)}>
                 Click this button to retrieve data from private
               </button>
               <button
