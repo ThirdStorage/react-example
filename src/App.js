@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 
 function App() {
   const thirdStorageClient = new ThirdStorage(
-      //Replace the ThirdStorage Server URL
-      "http://localhost:3000/api/projects/mbtcvlutlw"
+    //Replace the ThirdStorage Server URL
+    "http://localhost:3000/api/projects/mbtcvlutlw"
   );
   const [data, setData] = useState("");
   const [file, setFile] = useState(null);
@@ -16,10 +16,10 @@ function App() {
 
   const set = async (is_private = true) => {
     console.log(
-        is_private
-            ? (await thirdStorageClient.signMessageForEncryption()) &&
+      is_private
+        ? (await thirdStorageClient.signMessageForEncryption()) &&
             (await thirdStorageClient.private.set(key, data))
-            : await thirdStorageClient.public.set(key, data)
+        : await thirdStorageClient.public.set(key, data)
     );
 
     // const message = `Stored encrypted data to thirdStorageClient in ${setDuration} ms \n ${JSON.stringify(
@@ -35,8 +35,8 @@ function App() {
 
   async function retrieve(is_private = true) {
     const res = is_private
-        ? await thirdStorageClient.private.get(key)
-        : await thirdStorageClient.public.get(key);
+      ? await thirdStorageClient.private.get(key)
+      : await thirdStorageClient.public.get(key);
     console.log(res);
 
     let getMessage;
@@ -117,122 +117,122 @@ function App() {
   // }
 
   return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <div className="flex space-x-2">
-            <button
-                onClick={() => signIn()}
-                disabled={!connectors[0].ready || fetchedAddress}
-                className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title"
-            >
-              {fetchedAddress
-                  ? `Connected to ${fetchedAddress.substring(
-                      0,
-                      3
-                  )}...${fetchedAddress.substring(
-                      fetchedAddress.length - 3,
-                      fetchedAddress.length
-                  )} `
-                  : "Connect Wallet"}
-            </button>
-            {fetchedAddress && (
-                <div>
-                  <div className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title">
-                    Logged in as {fetchedAddress}
-                  </div>
-                  <br />
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-            )}
-          </div>
-          {fetchedAddress ? (
-              <div>
-                <div>
-                  <br />
-                  Enter Key:
-                  <input onChange={(e) => setKey(e.target.value)} />
-                  Enter Data:
-                  <input onChange={(e) => setData(e.target.value)} />
-                  Choose file:
-                  <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-                  <button onClick={() => set(false)}>
-                    Click this button to store as public data
-                  </button>
-                  <button onClick={() => set(true)}>
-                    Click this button to store as private data
-                  </button>
-                  <button onClick={() => retrieve(false)}>
-                    Click this button to retrieve data from public
-                  </button>
-                  <button onClick={() => retrieve(true)}>
-                    Click this button to retrieve data from private
-                  </button>
-                  <button
-                      onClick={() =>
-                          thirdStorageClient.database
-                              .set(key, data)
-                              .then((res) => alert(res))
-                      }
-                  >
-                    Click this button to store data into database
-                  </button>
-                  <button
-                      onClick={() =>
-                          thirdStorageClient.database.get(key).then((res) => alert(res))
-                      }
-                  >
-                    Click this button to retrieve data from database
-                  </button>
-                  <button
-                      onClick={() => {
-                        if (file === null) {
-                          alert("Please choose a file");
-                          return;
-                        }
-
-                        thirdStorageClient.ipfs
-                            .set(key, file)
-                            .then((res) => alert(res));
-                      }}
-                  >
-                    Click this button to store file in IPFS
-                  </button>
-                  <button
-                      onClick={() =>
-                          thirdStorageClient.ipfs.get(key).then((res) => alert(res))
-                      }
-                  >
-                    Click this button to retrieve CID for a given key
-                  </button>
-                  <button
-                      onClick={() => {
-                        if (file === null) {
-                          alert("Please choose a file");
-                          return;
-                        }
-
-                        thirdStorageClient.ipns
-                            .set(key, file)
-                            .then((res) => alert(res));
-                      }}
-                  >
-                    Click this button to store file in IPNS
-                  </button>
-                  <button
-                      onClick={() =>
-                          thirdStorageClient.ipns.get(key).then((res) => alert(res))
-                      }
-                  >
-                    Click this button to retrieve Name for a given key
-                  </button>
-                </div>
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <div className="flex space-x-2">
+          <button
+            onClick={() => signIn()}
+            disabled={!connectors[0].ready || fetchedAddress}
+            className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title"
+          >
+            {fetchedAddress
+              ? `Connected to ${fetchedAddress.substring(
+                  0,
+                  3
+                )}...${fetchedAddress.substring(
+                  fetchedAddress.length - 3,
+                  fetchedAddress.length
+                )} `
+              : "Connect Wallet"}
+          </button>
+          {fetchedAddress && (
+            <div>
+              <div className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title">
+                Logged in as {fetchedAddress}
               </div>
-          ) : (
-              <div>Please sign in to continue!</div>
+              <br />
+              <button onClick={handleLogout}>Logout</button>
+            </div>
           )}
-        </header>
-      </div>
+        </div>
+        {fetchedAddress ? (
+          <div>
+            <div>
+              <br />
+              Enter Key:
+              <input onChange={(e) => setKey(e.target.value)} />
+              Enter Data:
+              <input onChange={(e) => setData(e.target.value)} />
+              Choose file:
+              <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+              <button onClick={() => set(false)}>
+                Click this button to store as public data
+              </button>
+              <button onClick={() => set(true)}>
+                Click this button to store as private data
+              </button>
+              <button onClick={() => retrieve(false)}>
+                Click this button to retrieve data from public
+              </button>
+              <button onClick={() => retrieve(true)}>
+                Click this button to retrieve data from private
+              </button>
+              <button
+                onClick={() =>
+                  thirdStorageClient.database
+                    .set(key, data)
+                    .then((res) => alert(res))
+                }
+              >
+                Click this button to store data into database
+              </button>
+              <button
+                onClick={() =>
+                  thirdStorageClient.database.get(key).then((res) => alert(res))
+                }
+              >
+                Click this button to retrieve data from database
+              </button>
+              <button
+                onClick={() => {
+                  if (file === null) {
+                    alert("Please choose a file");
+                    return;
+                  }
+
+                  thirdStorageClient.ipfs
+                    .set(key, file)
+                    .then((res) => alert(res));
+                }}
+              >
+                Click this button to store file in IPFS
+              </button>
+              <button
+                onClick={() =>
+                  thirdStorageClient.ipfs.get(key).then((res) => alert(res))
+                }
+              >
+                Click this button to retrieve CID for a given key
+              </button>
+              <button
+                onClick={() => {
+                  if (file === null) {
+                    alert("Please choose a file");
+                    return;
+                  }
+
+                  thirdStorageClient.ipns
+                    .set(key, file)
+                    .then((res) => alert(res));
+                }}
+              >
+                Click this button to store file in IPNS
+              </button>
+              <button
+                onClick={() =>
+                  thirdStorageClient.ipns.get(key).then((res) => alert(res))
+                }
+              >
+                Click this button to retrieve Name for a given key
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>Please sign in to continue!</div>
+        )}
+      </header>
+    </div>
   );
 }
 
