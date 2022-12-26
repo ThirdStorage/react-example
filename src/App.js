@@ -9,7 +9,7 @@ function App() {
   // Initializing the client
   const thirdStorageClient = new ThirdStorage(
     //Replace the ThirdStorage Server URL
-    "http://localhost:3000/api/projects/ttmcivawyl"
+    "http://localhost:3000/api/project"
   );
 
   const [data, setData] = useState("");
@@ -77,8 +77,12 @@ function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [fetchedAddress, setFetchedAddress] = useState(false);
 
-  const { connectAsync, connectors, isLoading, pendingConnector } =
-    useConnect();
+  const {
+    connectAsync,
+    connectors,
+    isLoading,
+    pendingConnector,
+  } = useConnect();
 
   const { address, isConnected } = useAccount();
 
