@@ -3,57 +3,20 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import {
-  WagmiConfig,
-  createClient,
-  defaultChains,
-  configureChains,
-} from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
-const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
-  publicProvider(),
-]);
-
-const client = createClient({
-  autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "wagmi",
-      },
-    }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        qrcode: true,
-      },
-    }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: "Injected",
-        shimDisconnect: true,
-      },
-    }),
-  ],
-  provider,
-  webSocketProvider,
-});
+import { AuthWrapper } from "@thirdstorage/sdk";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <WagmiConfig client={client}>
-      <App />
-    </WagmiConfig>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <AuthWrapper
+    appName="Third Storage TEST"
+    walletConnectProjectId={"36d14281c36a7e71ecb67f36d1a4a2b6"}
+    arcanaAppId="90677acac473651d0626e04371d59c96b4af83fb"
+  >
+    <App />
+  </AuthWrapper>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -1,48 +1,29 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import ThirdStorage from "@thirdstorage/sdk";
-import { useAccount, useConnect, useNetwork, useSignMessage } from "wagmi";
-import { useEffect, useState } from "react";
+import {
+  ThirdStorageClient,
+  ArcanaAuthButton,
+  MetamaskAuthButton,
+  DisconnectButton,
+} from "@thirdstorage/sdk";
+import { useState } from "react";
 
 function App() {
   // Initializing the client
-  const thirdStorageClient = new ThirdStorage(
-    //Replace the ThirdStorage Server URL
-    "http://localhost:3000/api/project"
+  const [isInitialized, setIsInitialized] = useState(false);
+  const thirdStorageClientRef = useRef(
+    new ThirdStorageClient(
+      //Replace the ThirdStorage Server URL
+      "http://localhost:3000/api/project"
+    )
   );
+
+  const thirdStorageClient = thirdStorageClientRef.current;
 
   const [data, setData] = useState("");
   const [file, setFile] = useState(null);
   const [key, setKey] = useState("");
-
-  // Wallet authentication
-  const signIn = async (a = null, chainId = null) => {
-    try {
-      let res = {};
-      if (!isConnected) {
-        res = await connectAsync({
-          connector: connectors[0],
-        });
-
-        a = res.account;
-        chainId = res.chain?.id;
-      } else {
-        a = address;
-        chainId = activeChain?.id;
-        console.log(address, chainId);
-        if (!address || !chainId) return;
-      }
-
-      setIsInitializing(true);
-      if (await thirdStorageClient.signIn(a, chainId, signMessageAsync)) {
-        alert("Logged in!");
-        window.location.href = window.location.href;
-      }
-    } catch (error) {
-      alert(error.message);
-    }
-  };
 
   // Setting data
   const set = async (is_private = true) => {
@@ -74,35 +55,6 @@ function App() {
     alert(getMessage);
   }
 
-  const [isInitializing, setIsInitializing] = useState(true);
-  const [fetchedAddress, setFetchedAddress] = useState(false);
-
-  const {
-    connectAsync,
-    connectors,
-    isLoading,
-    pendingConnector,
-  } = useConnect();
-
-  const { address, isConnected } = useAccount();
-
-  const { signMessageAsync } = useSignMessage();
-  const { chain: activeChain } = useNetwork();
-
-  useEffect(() => {
-    (async () => {
-      if (!isLoading && isInitializing && !isConnected) {
-        setIsInitializing(false);
-      } else if (!isLoading && isConnected && isInitializing) {
-        let a = await thirdStorageClient.signedInWallet();
-
-        if (a) {
-          setFetchedAddress(a);
-        }
-      }
-    })();
-  }, []);
-
   // Logging out
   const handleLogout = async () => {
     await thirdStorageClient.signOut();
@@ -110,37 +62,36 @@ function App() {
     window.location.href = window.location.href;
   };
 
+  useEffect(() => {
+    (async () => {
+      await thirdStorageClient.initialize();
+      setIsInitialized(true);
+    })();
+  }, []);
+
+  if (!isInitialized) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <div className="flex space-x-2">
-          <button
-            onClick={() => signIn()}
-            disabled={!connectors[0].ready || fetchedAddress}
-            className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title"
-          >
-            {fetchedAddress
-              ? `Connected to ${fetchedAddress.substring(
-                  0,
-                  3
-                )}...${fetchedAddress.substring(
-                  fetchedAddress.length - 3,
-                  fetchedAddress.length
-                )} `
-              : "Connect Wallet"}
-          </button>
-          {fetchedAddress && (
+          <ArcanaAuthButton thirdStorageClient={thirdStorageClient} />
+          <MetamaskAuthButton thirdStorageClient={thirdStorageClient} />
+          <DisconnectButton thirdStorageClient={thirdStorageClient} />
+          {thirdStorageClient.isConnected && (
             <div>
               <div className="p-3 border rounded-xl border-gray-400 text-[#ffffff9d] title">
-                Welcome, {fetchedAddress}
+                Welcome, {thirdStorageClient.connectedAddress}
               </div>
               <br />
               <button onClick={handleLogout}>Logout</button>
             </div>
           )}
         </div>
-        {fetchedAddress ? (
+        {thirdStorageClient.isConnected ? (
           <div>
             <div>
               <br />
